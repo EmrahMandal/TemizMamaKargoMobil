@@ -1,0 +1,9 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": ["app.json"],
+      "url": "https://json.schemastore.org/app-json-expo-54.json"
+    }
+  ],
+  "json.validate.enable": false
+}

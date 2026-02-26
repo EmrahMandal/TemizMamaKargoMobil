@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "reactNativeKeycloak",
-    "slug": "reactNativeKeycloak",
+    "name": "ZMobilReact",
+    "slug": "zmobilreact",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.reactnativekeycloak.app"
+      "bundleIdentifier": "com.zmobilreact.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +23,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.reactnativekeycloak.app",
+      "package": "com.zmobilreact.app",
       "usesCleartextTraffic": true,
       "intentFilters": [
         {
