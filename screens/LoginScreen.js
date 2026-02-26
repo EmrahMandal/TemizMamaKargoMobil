@@ -50,7 +50,7 @@ export default function LoginScreen({ onLoginSuccess }) {
         )}
 
         <Text style={styles.infoText}>
-          Güvenli kimlik doğrulama için Keycloak kullanıyoruz
+          Deneme-üvenli kimlik doğrulama için Keycloak kullanıyoruz
         </Text>
       </View>
     </View>
