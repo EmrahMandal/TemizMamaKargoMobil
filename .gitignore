@@ -38,4 +38,5 @@ yarn-error.*
 
 # generated native folders
 /ios
+# Android klasörünü tamamen hariç tut
 /android
