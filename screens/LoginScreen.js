@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   badgeLogo: {
     width: BADGE_SIZE * 0.8,
     height: undefined,
-    aspectRatio: 1, // yatay logo için ideal (gerekirse 2.5 yapabilirsin)
+    aspectRatio: 1,
   },
 
   // Content
