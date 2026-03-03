@@ -12,7 +12,7 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import { Feather, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import authService from '../services/authService';
 
 export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
@@ -66,9 +66,11 @@ export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
     userInfo?.preferred_username?.charAt(0)?.toUpperCase() ||
     'U';
 
-  const MenuTile = ({ label, icon }) => (
+  const MenuTile = ({ label, iconName, iconColor }) => (
     <TouchableOpacity style={styles.tile} activeOpacity={0.85}>
-      <Text style={styles.tileIcon}>{icon}</Text>
+      <View style={styles.tileIcon}>
+        <MaterialCommunityIcons name={iconName} size={30} color={iconColor} />
+      </View>
       <Text style={styles.tileText}>{label}</Text>
     </TouchableOpacity>
   );
@@ -158,20 +160,13 @@ export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
         <Text style={styles.pageTitle}>Anasayfa</Text>
 
         <View style={styles.grid}>
-          <MenuTile label="Araç Özetleri" icon="🚚" />
-          <MenuTile label="Gelen Kutusu" icon="💬" />
-          <MenuTile label="Depo" icon="🏢" />
+          <MenuTile label="Araç Özetleri" iconName="truck-fast-outline" iconColor="#3b82f6" />
+          <MenuTile label="Araç Kontrol" iconName="clipboard-check-outline" iconColor="#22c55e" />
+          <MenuTile label="İletişim Talebi" iconName="email-outline" iconColor="#f59e0b" />
 
-          <MenuTile label="Dağıtıma Al" icon="📦" />
-          <MenuTile label="Araç Kontrol" icon="✅" />
-          <MenuTile label="Depo Toplama" icon="🧾" />
-
-          <MenuTile label="Eve Git" icon="🏠" />
-          <MenuTile label="Şirkete Git" icon="🏬" />
-          <MenuTile label="İletişim Talebi" icon="✉️" />
-
-          <MenuTile label="SSS" icon="❓" />
-          <MenuTile label="Gönderiler" icon="🛒" />
+          <MenuTile label="Eve Git" iconName="home-city-outline" iconColor="#a855f7" />
+          <MenuTile label="Şirkete Git" iconName="office-building-outline" iconColor="#06b6d4" />
+          <MenuTile label="Gönderiler" iconName="cart-outline" iconColor="#ef4444" />
         </View>
       </ScrollView>
 
@@ -201,13 +196,15 @@ const styles = StyleSheet.create({
 
   header: {
     backgroundColor: '#0066cc',
-    paddingTop: 54,
+    paddingTop: 60,
   },
   headerRow: {
     paddingHorizontal: 18,
+    paddingBottom: 4,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    
   },
   profileLeft: {
     flexDirection: 'row',
@@ -215,15 +212,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   avatarContainer: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    width: 62,
+    height: 62,
+    borderRadius: 31,
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarText: {
-    fontSize: 22,
+    fontSize: 25,
     fontWeight: '800',
     color: '#0066cc',
   },
@@ -304,11 +301,10 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   tileIcon: {
-    fontSize: 20,
     marginBottom: 8,
   },
   tileText: {
-    fontSize: 12.5,
+    fontSize: 13,
     color: '#334155',
     fontWeight: '700',
     textAlign: 'center',
