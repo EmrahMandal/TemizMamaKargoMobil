@@ -7,12 +7,17 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Modal,
+  Pressable,
+  StatusBar,
+  Platform,
 } from 'react-native';
 import authService from '../services/authService';
 
 export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
   const [userInfo, setUserInfo] = useState(initialUserInfo);
   const [loading, setLoading] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
 
   useEffect(() => {
     if (!initialUserInfo) {
@@ -35,28 +40,37 @@ export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
   };
 
   const handleLogout = async () => {
-    Alert.alert(
-      'Çıkış Yap',
-      'Çıkış yapmak istediğinizden emin misiniz?',
-      [
-        { text: 'İptal', style: 'cancel' },
-        {
-          text: 'Çıkış Yap',
-          style: 'destructive',
-          onPress: async () => {
-            setLoading(true);
-            const result = await authService.logout();
-            setLoading(false);
-            if (result.success) {
-              onLogout();
-            } else {
-              Alert.alert('Hata', 'Çıkış yapılamadı');
-            }
-          },
+    Alert.alert('Çıkış Yap', 'Çıkış yapmak istediğinizden emin misiniz?', [
+      { text: 'İptal', style: 'cancel' },
+      {
+        text: 'Çıkış Yap',
+        style: 'destructive',
+        onPress: async () => {
+          setLoading(true);
+          const result = await authService.logout();
+          setLoading(false);
+          if (result.success) {
+            onLogout();
+          } else {
+            Alert.alert('Hata', 'Çıkış yapılamadı');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
+
+  const displayName = userInfo?.name || userInfo?.preferred_username || 'Kullanıcı';
+  const avatarLetter =
+    userInfo?.name?.charAt(0)?.toUpperCase() ||
+    userInfo?.preferred_username?.charAt(0)?.toUpperCase() ||
+    'U';
+
+  const MenuTile = ({ label, icon }) => (
+    <TouchableOpacity style={styles.tile} activeOpacity={0.85}>
+      <Text style={styles.tileIcon}>{icon}</Text>
+      <Text style={styles.tileText}>{label}</Text>
+    </TouchableOpacity>
+  );
 
   if (loading) {
     return (
@@ -67,93 +81,113 @@ export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.screen}>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={Platform.OS === 'android' ? '#0066cc' : undefined}
+      />
+
+      {/* HEADER */}
       <View style={styles.header}>
-        <View style={styles.avatarContainer}>
-          <Text style={styles.avatarText}>
-            {userInfo?.name?.charAt(0)?.toUpperCase() ||
-             userInfo?.preferred_username?.charAt(0)?.toUpperCase() ||
-             'U'}
-          </Text>
+        <View style={styles.headerRow}>
+          <View style={styles.profileLeft}>
+            <View style={styles.avatarContainer}>
+              <Text style={styles.avatarText}>{avatarLetter}</Text>
+            </View>
+
+            <View style={styles.nameBlock}>
+              <Text style={styles.welcomeText}>Hoş Geldin!</Text>
+              <Text style={styles.nameText} numberOfLines={1}>
+                {displayName}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.headerRight}>
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={handleLogout}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.iconText}>⎋</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => setMenuVisible(true)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.iconText}>⋮</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <Text style={styles.welcomeText}>Hoş Geldin!</Text>
-        <Text style={styles.nameText}>
-          {userInfo?.name || userInfo?.preferred_username || 'Kullanıcı'}
+
+        <View style={styles.headerSpacer} />
+      </View>
+
+      {/* Popup Menu */}
+      <Modal
+        visible={menuVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setMenuVisible(false)}
+      >
+        <Pressable style={styles.modalBackdrop} onPress={() => setMenuVisible(false)}>
+          <View style={styles.popupMenu}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.popupItem}
+              onPress={() => {
+                setMenuVisible(false);
+                // Şimdilik işlem yok
+              }}
+            >
+              <Text style={styles.popupItemText}>Şifre Değiştir</Text>
+            </TouchableOpacity>
+          </View>
+        </Pressable>
+      </Modal>
+
+      {/* BODY */}
+      <ScrollView
+        style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+      >
+        <Text style={styles.pageTitle}>Anasayfa</Text>
+
+        <View style={styles.grid}>
+          <MenuTile label="Araç Özetleri" icon="🚚" />
+          <MenuTile label="Gelen Kutusu" icon="💬" />
+          <MenuTile label="Depo" icon="🏢" />
+
+          <MenuTile label="Dağıtıma Al" icon="📦" />
+          <MenuTile label="Araç Kontrol" icon="✅" />
+          <MenuTile label="Depo Toplama" icon="🧾" />
+
+          <MenuTile label="Eve Git" icon="🏠" />
+          <MenuTile label="Şirkete Git" icon="🏬" />
+          <MenuTile label="İletişim Talebi" icon="✉️" />
+
+          <MenuTile label="SSS" icon="❓" />
+          <MenuTile label="Gönderiler" icon="🛒" />
+        </View>
+      </ScrollView>
+
+      {/* ✅ FOOTER: ScrollView DIŞINDA ve absolute => kesin en altta */}
+      <View style={styles.footerContainer}>
+        <Text style={styles.footer}>
+          © {new Date().getFullYear()}  Temizmama Express 
         </Text>
       </View>
-
-      <View style={styles.infoSection}>
-        <Text style={styles.sectionTitle}>Kullanıcı Bilgileri</Text>
-
-        {userInfo?.email && (
-          <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>E-posta:</Text>
-            <Text style={styles.infoValue}>{userInfo.email}</Text>
-          </View>
-        )}
-
-        {userInfo?.preferred_username && (
-          <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>Kullanıcı Adı:</Text>
-            <Text style={styles.infoValue}>{userInfo.preferred_username}</Text>
-          </View>
-        )}
-
-        {userInfo?.given_name && (
-          <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>Ad:</Text>
-            <Text style={styles.infoValue}>{userInfo.given_name}</Text>
-          </View>
-        )}
-
-        {userInfo?.family_name && (
-          <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>Soyad:</Text>
-            <Text style={styles.infoValue}>{userInfo.family_name}</Text>
-          </View>
-        )}
-
-        {userInfo?.email_verified !== undefined && (
-          <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>E-posta Doğrulandı:</Text>
-            <Text style={styles.infoValue}>
-              {userInfo.email_verified ? '✓ Evet' : '✗ Hayır'}
-            </Text>
-          </View>
-        )}
-
-        {userInfo?.sub && (
-          <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>Kullanıcı ID:</Text>
-            <Text style={[styles.infoValue, styles.smallText]}>
-              {userInfo.sub}
-            </Text>
-          </View>
-        )}
-      </View>
-
-      <View style={styles.debugSection}>
-        <Text style={styles.sectionTitle}>Tüm Bilgiler (Debug)</Text>
-        <View style={styles.debugBox}>
-          <Text style={styles.debugText}>
-            {JSON.stringify(userInfo, null, 2)}
-          </Text>
-        </View>
-      </View>
-
-      <TouchableOpacity
-        style={styles.logoutButton}
-        onPress={handleLogout}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.logoutButtonText}>Çıkış Yap</Text>
-      </TouchableOpacity>
-    </ScrollView>
+    </View>
   );
 }
 
+const FOOTER_H = 44;
+
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
@@ -163,112 +197,166 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f5f5f5',
   },
+
   header: {
     backgroundColor: '#0066cc',
-    paddingTop: 60,
-    paddingBottom: 30,
+    paddingTop: 54,
+  },
+  headerRow: {
+    paddingHorizontal: 18,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  profileLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
   avatarContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 15,
   },
   avatarText: {
-    fontSize: 36,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '800',
     color: '#0066cc',
   },
+  nameBlock: {
+    marginLeft: 12,
+    flex: 1,
+  },
   welcomeText: {
-    fontSize: 16,
+    fontSize: 13,
     color: '#fff',
     opacity: 0.9,
   },
   nameText: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    marginTop: 4,
+    fontSize: 20,
+    fontWeight: '800',
     color: '#fff',
-    marginTop: 5,
   },
-  infoSection: {
-    backgroundColor: '#fff',
-    marginTop: 20,
-    marginHorizontal: 20,
-    padding: 20,
-    borderRadius: 10,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 15,
-  },
-  infoItem: {
-    marginBottom: 15,
-    paddingBottom: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  infoLabel: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 5,
-  },
-  infoValue: {
-    fontSize: 16,
-    color: '#333',
-    fontWeight: '500',
-  },
-  smallText: {
-    fontSize: 12,
-  },
-  debugSection: {
-    backgroundColor: '#fff',
-    margin: 20,
-    padding: 20,
-    borderRadius: 10,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-  },
-  debugBox: {
-    backgroundColor: '#f5f5f5',
-    padding: 10,
-    borderRadius: 5,
-    maxHeight: 300,
-  },
-  debugText: {
-    fontSize: 10,
-    fontFamily: 'monospace',
-    color: '#333',
-  },
-  logoutButton: {
-    backgroundColor: '#dc3545',
-    marginHorizontal: 20,
-    marginVertical: 20,
-    paddingVertical: 15,
-    borderRadius: 8,
+  headerRight: {
+    flexDirection: 'row',
     alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    gap: 10,
+    marginLeft: 10,
   },
-  logoutButtonText: {
+  iconButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconText: {
     color: '#fff',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  headerSpacer: {
+    height: 16,
+    backgroundColor: '#f5f5f5',
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    marginTop: 18,
+  },
+
+  // BODY content: footer kapatmasın diye paddingBottom ekledik
+  content: {
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: FOOTER_H + 14, // ✅ footer yüksekliği kadar boşluk
+  },
+  pageTitle: {
     fontSize: 16,
+    fontWeight: '700',
+    color: '#0f172a',
+    marginBottom: 12,
+    marginLeft: 4,
+  },
+
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  tile: {
+    width: '31.5%',
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  tileIcon: {
+    fontSize: 20,
+    marginBottom: 8,
+  },
+  tileText: {
+    fontSize: 12.5,
+    color: '#334155',
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+
+  // ✅ Sabit footer (gerçek en alt)
+  footerContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: FOOTER_H,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  footer: {
+    fontSize: 12,
+    color: '#94a3b8',
+    textAlign: 'center',
+  },
+
+  // Popup
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.15)',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    paddingTop: 48,
+    paddingRight: 12,
+  },
+  popupMenu: {
+    width: 180,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    paddingVertical: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
+    elevation: 6,
+  },
+  popupItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  popupItemText: {
+    fontSize: 14,
+    color: '#0f172a',
     fontWeight: '600',
   },
 });
