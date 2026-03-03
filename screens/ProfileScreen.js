@@ -12,6 +12,7 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
+import { Feather, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import authService from '../services/authService';
 
 export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
@@ -109,7 +110,7 @@ export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
               onPress={handleLogout}
               activeOpacity={0.8}
             >
-              <Text style={styles.iconText}>⎋</Text>
+              <MaterialIcons name="logout" size={21} color="#fff" />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -117,7 +118,7 @@ export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
               onPress={() => setMenuVisible(true)}
               activeOpacity={0.8}
             >
-              <Text style={styles.iconText}>⋮</Text>
+              <MaterialIcons name="more-vert" size={21} color="#fff" />
             </TouchableOpacity>
           </View>
         </View>
@@ -237,7 +238,7 @@ const styles = StyleSheet.create({
   },
   nameText: {
     marginTop: 4,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '800',
     color: '#fff',
   },
