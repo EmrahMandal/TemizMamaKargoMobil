@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -11,14 +11,18 @@ import {
   Pressable,
   StatusBar,
   Platform,
+  Dimensions,
 } from 'react-native';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import authService from '../services/authService';
 
 export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
+  const MENU_WIDTH = 180;
   const [userInfo, setUserInfo] = useState(initialUserInfo);
   const [loading, setLoading] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 56, left: 12 });
+  const menuButtonRef = useRef(null);
 
   useEffect(() => {
     if (!initialUserInfo) {
@@ -60,6 +64,24 @@ export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
     ]);
   };
 
+  const handleOpenMenu = () => {
+    if (menuButtonRef.current?.measureInWindow) {
+      menuButtonRef.current.measureInWindow((x, y, width, height) => {
+        const screenWidth = Dimensions.get('window').width;
+        const left = Math.min(
+          Math.max(12, x + width - MENU_WIDTH),
+          screenWidth - MENU_WIDTH - 12
+        );
+
+        setMenuPosition({ top: y + height + 12, left });
+        setMenuVisible(true);
+      });
+      return;
+    }
+
+    setMenuVisible(true);
+  };
+
   const displayName = userInfo?.name || userInfo?.preferred_username || 'Kullanıcı';
   const avatarLetter =
     userInfo?.name?.charAt(0)?.toUpperCase() ||
@@ -67,7 +89,7 @@ export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
     'U';
 
   const MenuTile = ({ label, iconName, iconColor }) => (
-    <TouchableOpacity style={styles.tile} activeOpacity={0.85}>
+    <TouchableOpacity style={styles.tile} activeOpacity={0.80}>
       <View style={styles.tileIcon}>
         <MaterialCommunityIcons name={iconName} size={30} color={iconColor} />
       </View>
@@ -116,8 +138,9 @@ export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
             </TouchableOpacity>
 
             <TouchableOpacity
+              ref={menuButtonRef}
               style={styles.iconButton}
-              onPress={() => setMenuVisible(true)}
+              onPress={handleOpenMenu}
               activeOpacity={0.8}
             >
               <MaterialIcons name="more-vert" size={21} color="#fff" />
@@ -136,7 +159,7 @@ export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
         onRequestClose={() => setMenuVisible(false)}
       >
         <Pressable style={styles.modalBackdrop} onPress={() => setMenuVisible(false)}>
-          <View style={styles.popupMenu}>
+          <View style={[styles.popupMenu, { top: menuPosition.top, left: menuPosition.left }]}>
             <TouchableOpacity
               activeOpacity={0.8}
               style={styles.popupItem}
@@ -164,9 +187,10 @@ export default function ProfileScreen({ userInfo: initialUserInfo, onLogout }) {
           <MenuTile label="Araç Kontrol" iconName="clipboard-check-outline" iconColor="#22c55e" />
           <MenuTile label="İletişim Talebi" iconName="email-outline" iconColor="#f59e0b" />
 
+          <MenuTile label="Gönderiler" iconName="cart-outline" iconColor="#ef4444" />
           <MenuTile label="Eve Git" iconName="home-city-outline" iconColor="#a855f7" />
           <MenuTile label="Şirkete Git" iconName="office-building-outline" iconColor="#06b6d4" />
-          <MenuTile label="Gönderiler" iconName="cart-outline" iconColor="#ef4444" />
+          
         </View>
       </ScrollView>
 
@@ -185,18 +209,18 @@ const FOOTER_H = 44;
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F4F6F8',
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F4F6F8',
   },
 
   header: {
     backgroundColor: '#0066cc',
-    paddingTop: 60,
+    paddingTop: 58,
   },
   headerRow: {
     paddingHorizontal: 18,
@@ -212,14 +236,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   avatarContainer: {
-    width: 62,
-    height: 62,
-    borderRadius: 31,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
+  width: 62,
+  height: 62,
+  borderRadius: 31,
+  backgroundColor: '#fff',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 3 }, // iOS için gerekli
+  shadowOpacity: 0.12,
+  shadowRadius: 6,
+  elevation: 3, // Android
+},
+ avatarText: {
     fontSize: 25,
     fontWeight: '800',
     color: '#0066cc',
@@ -260,7 +290,7 @@ const styles = StyleSheet.create({
   },
   headerSpacer: {
     height: 16,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F4F6F8',
     borderTopLeftRadius: 18,
     borderTopRightRadius: 18,
     marginTop: 18,
@@ -273,11 +303,12 @@ const styles = StyleSheet.create({
     paddingBottom: FOOTER_H + 14, // ✅ footer yüksekliği kadar boşluk
   },
   pageTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
     color: '#0f172a',
     marginBottom: 12,
     marginLeft: 4,
+    letterSpacing: 0.2,
   },
 
   grid: {
@@ -287,7 +318,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   tile: {
-    width: '31.5%',
+    width: '31%',
     backgroundColor: '#ffffff',
     borderRadius: 14,
     paddingVertical: 16,
@@ -295,9 +326,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.07,
+    shadowRadius: 8,
     elevation: 2,
   },
   tileIcon: {
@@ -319,7 +350,7 @@ const styles = StyleSheet.create({
     height: FOOTER_H,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F4F6F8',
   },
   footer: {
     fontSize: 12,
@@ -331,12 +362,9 @@ const styles = StyleSheet.create({
   modalBackdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.15)',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
-    paddingTop: 48,
-    paddingRight: 12,
   },
   popupMenu: {
+    position: 'absolute',
     width: 180,
     backgroundColor: '#ffffff',
     borderRadius: 12,

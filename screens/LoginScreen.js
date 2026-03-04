@@ -37,7 +37,7 @@ export default function LoginScreen({ onLoginSuccess }) {
       {/* Üst Banner */}
       <View style={styles.heroWrap}>
         <ImageBackground
-          source={require('../assets/888.jpg')}
+          source={require('../assets/222.jpeg')}
           style={styles.heroImage}
           resizeMode="cover"
         >
@@ -112,24 +112,25 @@ const styles = StyleSheet.create({
   },
   heroOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.18)',
+    backgroundColor: 'rgba(0,0,0,0.12)',
   },
 
   // Diagonal white section
   diagonalWhite: {
     position: 'absolute',
-    top: HERO_HEIGHT - 40,
+    top: HERO_HEIGHT - 30,
+
     left: -40,
     right: -40,
-    height: 140,
+    height: 110,
     backgroundColor: '#ffffff',
-    transform: [{ rotate: '-7deg' }],
+    transform: [{ rotate: '-5deg' }],
   },
 
   // Logo Badge
   badge: {
     position: 'absolute',
-    top: HERO_HEIGHT - BADGE_SIZE / 2 - 30,
+    top: HERO_HEIGHT - BADGE_SIZE / 2 - 35,
     alignSelf: 'center',
     width: BADGE_SIZE,
     height: BADGE_SIZE,
@@ -139,10 +140,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
 
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: Platform.OS === 'ios' ? 0.15 : 0.25,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: Platform.OS === 'ios' ? 0.12 : 0.18,
+    shadowRadius: 10,
+    elevation: 6,
 
     borderWidth: 1,
     borderColor: '#f1f5f9',
@@ -166,11 +167,11 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '800',
     color: '#0f172a',
-    marginTop: 10,
+    marginTop: 14,
     textAlign: 'center',
   },
   subtitle: {
-    marginTop: 10,
+    marginTop: 14,
     fontSize: 15.5,
     color: '#64748b',
     textAlign: 'center',
@@ -183,16 +184,16 @@ const styles = StyleSheet.create({
   loginButton: {
     width: '100%',
     maxWidth: 420,
-    backgroundColor: '#ef4444',
-    borderRadius: 7,
+    backgroundColor: '#FAB524',
+    borderRadius: 10,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#ef4444',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: Platform.OS === 'ios' ? 0.20 : 0.28,
-    shadowRadius: 14,
-    elevation: 6,
+    shadowColor: '#0066cc',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: Platform.OS === 'ios' ? 0.14 : 0.18,
+    shadowRadius: 10,
+    elevation: 5,
   },
   loginButtonDisabled: {
     opacity: 0.9,
@@ -213,11 +214,11 @@ const styles = StyleSheet.create({
   hintBox: {
     marginTop: 14,
     width: '100%',
-    maxWidth: 300,
-    backgroundColor: '#f8fafc',
-    borderRadius: 3,
-    paddingVertical: 5,
-    paddingHorizontal: 5,
+    maxWidth: 320,
+    backgroundColor: '#f1f5f9',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     borderWidth: 1,
     borderColor: '#e2e8f0',
   },
